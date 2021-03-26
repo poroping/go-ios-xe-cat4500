@@ -1,82 +1,38 @@
-package hashicups
+package main
 
 import (
-	"encoding/json"
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"time"
 )
 
-// HostURL - Default Hashicups URL
-const HostURL string = "http://localhost:19090"
+var HostURL string = "https://172.29.72.81"
+var username string = "cisco"
+var password string = "cisco"
 
-// Client -
 type Client struct {
 	HostURL    string
 	HTTPClient *http.Client
-	Token      string
 }
 
-// AuthStruct -
-type AuthStruct struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-// AuthResponse -
-type AuthResponse struct {
-	UserID   int    `json:"user_id`
-	Username string `json:"username`
-	Token    string `json:"token"`
-}
-
-// NewClient -
-func NewClient(host, username, password *string) (*Client, error) {
+func NewClient(host, username, password string) (*Client, error) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	c := Client{
-		HTTPClient: &http.Client{Timeout: 10 * time.Second},
-		// Default Hashicups URL
-		HostURL: HostURL,
-	}
-
-	if host != nil {
-		c.HostURL = *host
-	}
-
-	if (username != nil) && (password != nil) {
-		// form request body
-		rb, err := json.Marshal(AuthStruct{
-			Username: *username,
-			Password: *password,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		// authenticate
-		req, err := http.NewRequest("POST", fmt.Sprintf("%s/signin", c.HostURL), strings.NewReader(string(rb)))
-		if err != nil {
-			return nil, err
-		}
-
-		body, err := c.doRequest(req)
-
-		// parse response body
-		ar := AuthResponse{}
-		err = json.Unmarshal(body, &ar)
-		if err != nil {
-			return nil, err
-		}
-
-		c.Token = ar.Token
+		HTTPClient: &http.Client{Timeout: 10 * time.Second, Transport: tr},
+		HostURL:    HostURL,
 	}
 
 	return &c, nil
 }
 
-func (c *Client) doRequest(req *http.Request) ([]byte, error) {
-	req.Header.Set("Authorization", c.Token)
+func (c *Client) doRequest(req *http.Request, sc int) ([]byte, error) {
+	req.Header.Set("Content-Type", "application/yang-data+json")
+	req.Header.Set("Accept", "application/yang-data+json")
+	req.SetBasicAuth(username, password)
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
@@ -89,7 +45,7 @@ func (c *Client) doRequest(req *http.Request) ([]byte, error) {
 		return nil, err
 	}
 
-	if res.StatusCode != http.StatusOK {
+	if res.StatusCode != sc {
 		return nil, fmt.Errorf("status: %d, body: %s", res.StatusCode, body)
 	}
 

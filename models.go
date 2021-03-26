@@ -1,32 +1,18 @@
-package hashicups
+package main
 
-// Order -
-type Order struct {
-	ID    int         `json:"id,omitempty"`
-	Items []OrderItem `json:"items,omitempty"`
-}
-
-// OrderItem -
-type OrderItem struct {
-	Coffee   Coffee `json:"coffee"`
-	Quantity int    `json:"quantity"`
-}
-
-// Coffee -
-type Coffee struct {
-	ID          int          `json:"id"`
-	Name        string       `json:"name"`
-	Teaser      string       `json:"teaser"`
-	Description string       `json:"description"`
-	Price       float64      `json:"price"`
-	Image       string       `json:"image"`
-	Ingredient  []Ingredient `json:"ingredients"`
-}
-
-// Ingredient -
-type Ingredient struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Quantity int    `json:"quantity"`
-	Unit     string `json:"unit"`
+type L3Vlan struct {
+	NedVlan struct {
+		Name        int    `json:"name"`
+		Description string `json:"description"`
+		IP          struct {
+			Vrf struct {
+			} `json:"vrf"`
+			Address struct {
+				Primary struct {
+					Address string `json:"address"`
+					Mask    string `json:"mask"`
+				} `json:"primary"`
+			} `json:"address"`
+		} `json:"ip"`
+	} `json:"ned:Vlan"`
 }

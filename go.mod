@@ -1,3 +1,3 @@
-module github.com/hashicorp-demoapp/hashicups-client-go
+module example.com/goresty
 
 go 1.13
