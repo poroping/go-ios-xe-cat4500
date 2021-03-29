@@ -8,13 +8,11 @@ import (
 	"time"
 )
 
-var HostURL string = "https://172.29.72.81"
-var username string = "cisco"
-var password string = "cisco"
-
 type Client struct {
 	HostURL    string
 	HTTPClient *http.Client
+	password   string
+	username   string
 }
 
 func NewClient(host, username, password string) (*Client, error) {
@@ -23,16 +21,18 @@ func NewClient(host, username, password string) (*Client, error) {
 	}
 	c := Client{
 		HTTPClient: &http.Client{Timeout: 10 * time.Second, Transport: tr},
-		HostURL:    HostURL,
+		HostURL:    host,
+		username:   username,
+		password:   password,
 	}
 
 	return &c, nil
 }
 
 func (c *Client) doRequest(req *http.Request, sc int) ([]byte, error) {
-	req.Header.Set("Content-Type", "application/yang-data+json")
-	req.Header.Set("Accept", "application/yang-data+json")
-	req.SetBasicAuth(username, password)
+	req.Header.Set("Content-Type", "application/vnd.yang.data+json")
+	req.Header.Set("Accept", "application/vnd.yang.data+json, application/vnd.yang.collection+json")
+	req.SetBasicAuth(c.username, c.password)
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
