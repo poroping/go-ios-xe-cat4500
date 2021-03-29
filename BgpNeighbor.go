@@ -1,4 +1,4 @@
-package main
+package go-ios-xe-cat4500
 
 import (
 	"encoding/json"
@@ -6,21 +6,6 @@ import (
 	"net/http"
 	"strings"
 )
-
-type BgpNeighbor struct {
-	NedNeighbor NedNeighbor `json:"ned:neighbor"`
-}
-
-type BgpNeighborList struct {
-	Collection struct {
-		NedNeighbor []NedNeighbor `json:"ned:neighbor"`
-	} `json:"collection"`
-}
-
-type NedNeighbor struct {
-	ID       string `json:"id,omitempty"`
-	RemoteAs int    `json:"remote-as"`
-}
 
 func (c *Client) CreateBgpNeighbor(id string, newBgpNeighbor BgpNeighbor) ([]byte, error) {
 	rb, err := json.Marshal(newBgpNeighbor)

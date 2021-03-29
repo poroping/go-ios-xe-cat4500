@@ -1,4 +1,4 @@
-package main
+package go-ios-xe-cat4500
 
 import (
 	"encoding/json"
@@ -6,31 +6,6 @@ import (
 	"net/http"
 	"strings"
 )
-
-type L3VlanList struct {
-	Collection struct {
-		NedVlan []NedVlan `json:"ned:Vlan"`
-	} `json:"collection"`
-}
-
-type L3Vlan struct {
-	NedVlan NedVlan `json:"ned:Vlan"`
-}
-
-type NedVlan struct {
-	Name        int    `json:"name,omitempty"`
-	Description string `json:"description"`
-	IP          struct {
-		Vrf struct {
-		} `json:"vrf"`
-		Address struct {
-			Primary struct {
-				Address string `json:"address"`
-				Mask    string `json:"mask"`
-			} `json:"primary"`
-		} `json:"address"`
-	} `json:"ip"`
-}
 
 func (c *Client) CreateL3Vlan(id int, newL3Vlan L3Vlan) ([]byte, error) {
 	rb, err := json.Marshal(newL3Vlan)

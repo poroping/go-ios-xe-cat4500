@@ -1,4 +1,4 @@
-package main
+package go-ios-xe-cat4500
 
 import (
 	"encoding/json"
@@ -6,21 +6,6 @@ import (
 	"net/http"
 	"strings"
 )
-
-type BgpNeighborPrefixListList struct {
-	Collection struct {
-		PrefixList []PrefixList `json:"ned:prefix-list"`
-	} `json:"collection"`
-}
-
-type BgpNeighborPrefixList struct {
-	PrefixList PrefixList `json:"ned:prefix-list"`
-}
-
-type PrefixList struct {
-	Inout          string `json:"inout"`
-	PrefixListName string `json:"prefix-list-name"`
-}
 
 func (c *Client) CreateBgpNeighborPrefixList(id string, inout string, newBgpNeighborPrefixList BgpNeighborPrefixList) ([]byte, error) {
 	rb, err := json.Marshal(newBgpNeighborPrefixList)
