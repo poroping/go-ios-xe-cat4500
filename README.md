@@ -1,3 +1,3 @@
-## Hashicups Client (Go)
+## IOSXE Client (Go)
 
-A Go library for [Hashicups](https://github.com/hashicorp-demoapp/product-api-go)
+Totally not butchered from [Hashicups](https://github.com/hashicorp-demoapp/product-api-go)
