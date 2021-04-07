@@ -3,9 +3,10 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"go-ios-xe-cat4500/models"
 	"net/http"
 	"strings"
+
+	"github.com/poroping/go-ios-xe-cat4500/models"
 )
 
 func (c *Client) CreateL3Vlan(id int, newL3Vlan models.L3Vlan) ([]byte, error) {

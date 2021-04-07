@@ -3,9 +3,10 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"go-ios-xe-cat4500/models"
 	"net/http"
 	"strings"
+
+	"github.com/poroping/go-ios-xe-cat4500/models"
 )
 
 func (c *Client) CreateBgpNeighborPrefixList(id string, as int, inout string, newBgpNeighborPrefixList models.BgpNeighborPrefixList) ([]byte, error) {
