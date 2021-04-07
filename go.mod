@@ -1,3 +1,3 @@
-module example.com/gorestconf
+module go-ios-xe-cat4500
 
 go 1.13

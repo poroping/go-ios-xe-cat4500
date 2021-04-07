@@ -1,4 +1,4 @@
-package go-ios-xe-cat4500
+package client
 
 import (
 	"crypto/tls"
