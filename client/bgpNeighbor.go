@@ -9,19 +9,25 @@ import (
 	"github.com/poroping/go-ios-xe-cat4500/models"
 )
 
-func (c *Client) CreateBgpNeighbor(id string, as int, newBgpNeighbor models.BgpNeighbor) ([]byte, error) {
-	rb, err := json.Marshal(newBgpNeighbor)
+func (c *Client) CreateBgpNeighbor(id string, as int, remoteas int) error {
+	m := models.BgpNeighbor{}
+	m.Neighbor.ID = id
+	m.Neighbor.RemoteAs = remoteas
+	rb, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/neighbor/%s", c.HostURL, as, id), strings.NewReader(string(rb)))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 201)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
 func (c *Client) ReadBgpNeighbor(id string, as int) (*models.BgpNeighbor, error) {
@@ -44,33 +50,38 @@ func (c *Client) ReadBgpNeighbor(id string, as int) (*models.BgpNeighbor, error)
 	return &res, nil
 }
 
-func (c *Client) UpdateBgpNeighbor(id string, as int, updateBgpNeighbor models.BgpNeighbor) ([]byte, error) {
-	rb, err := json.Marshal(updateBgpNeighbor)
+func (c *Client) UpdateBgpNeighbor(id string, as int, remoteas int) error {
+	m := models.BgpNeighbor{}
+	m.Neighbor.RemoteAs = remoteas
+	rb, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/neighbor/%s", c.HostURL, as, id), strings.NewReader(string(rb)))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 204)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
-func (c *Client) DeleteBgpNeighbor(id string, as int) ([]byte, error) {
+func (c *Client) DeleteBgpNeighbor(id string, as int) error {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/neighbor/%s", c.HostURL, as, id), nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 204)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
 func (c *Client) ListBgpNeighbor() (*models.BgpNeighborList, error) {

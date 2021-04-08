@@ -9,19 +9,36 @@ import (
 	"github.com/poroping/go-ios-xe-cat4500/models"
 )
 
-func (c *Client) CreateBgpNeighborConfig(id string, as int, newBgpNeighborConfig models.BgpNeighborConfig) ([]byte, error) {
-	rb, err := json.Marshal(newBgpNeighborConfig)
+func (c *Client) CreateBgpNeighborConfig(id string, as int, activate interface{}, defaultoriginate interface{}, removeprivateas interface{}, softreconfiguration interface{}) error {
+	m := models.BgpNeighborConfig{}
+	m.NeighborConfig.ID = id
+	if activate != nil {
+		m.NeighborConfig.Activate = []interface{}{}
+	}
+	if defaultoriginate != nil {
+		m.NeighborConfig.DefaultOriginate = struct{}{}
+	}
+	if removeprivateas != nil {
+		m.NeighborConfig.RemovePrivateAs = []interface{}{}
+	}
+	if softreconfiguration != nil {
+		m.NeighborConfig.SoftReconfiguration = "inbound"
+	}
+	rb, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/address-family/no-vrf/ipv4/unicast/neighbor/%s", c.HostURL, as, id), strings.NewReader(string(rb)))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 201)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
 func (c *Client) ReadBgpNeighborConfig(id string, as int) (*models.BgpNeighborConfig, error) {
@@ -44,33 +61,50 @@ func (c *Client) ReadBgpNeighborConfig(id string, as int) (*models.BgpNeighborCo
 	return &res, nil
 }
 
-func (c *Client) UpdateBgpNeighborConfig(id string, as int, updateBgpNeighborConfig models.BgpNeighborConfig) ([]byte, error) {
-	rb, err := json.Marshal(updateBgpNeighborConfig)
+func (c *Client) UpdateBgpNeighborConfig(id string, as int, activate interface{}, defaultoriginate interface{}, removeprivateas interface{}, softreconfiguration interface{}) error {
+	m := models.BgpNeighborConfig{}
+	m.NeighborConfig.ID = id
+	if activate != nil {
+		m.NeighborConfig.Activate = []interface{}{}
+	}
+	if defaultoriginate != nil {
+		m.NeighborConfig.DefaultOriginate = struct{}{}
+	}
+	if removeprivateas != nil {
+		m.NeighborConfig.RemovePrivateAs = []interface{}{}
+	}
+	if softreconfiguration != nil {
+		m.NeighborConfig.SoftReconfiguration = "inbound"
+	}
+	rb, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/address-family/no-vrf/ipv4/unicast/neighbor/%s", c.HostURL, as, id), strings.NewReader(string(rb)))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 204)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
-func (c *Client) DeleteBgpNeighborConfig(id string, as int) ([]byte, error) {
+func (c *Client) DeleteBgpNeighborConfig(id string, as int) error {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/address-family/no-vrf/ipv4/unicast/neighbor/%s", c.HostURL, as, id), nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 204)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
 func (c *Client) ListBgpNeighborConfig(as int) (*models.BgpNeighborConfigList, error) {

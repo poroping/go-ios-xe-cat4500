@@ -12,15 +12,15 @@ type L3Vlan struct {
 
 type Vlan struct {
 	Name        int    `json:"name,omitempty"`
-	Description string `json:"description"`
+	Description string `json:"description,omitempty"`
 	IP          struct {
 		Vrf struct {
-		} `json:"vrf"`
+		} `json:"vrf,omitempty"`
 		Address struct {
 			Primary struct {
 				Address string `json:"address"`
 				Mask    string `json:"mask"`
-			} `json:"primary"`
-		} `json:"address"`
+			} `json:"primary,omitempty"`
+		} `json:"address,omitempty"`
 	} `json:"ip"`
 }

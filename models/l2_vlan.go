@@ -12,5 +12,5 @@ type L2VlanList struct {
 
 type VlanList struct {
 	ID   int    `json:"id,omitempty"`
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 }

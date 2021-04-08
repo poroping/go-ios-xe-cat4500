@@ -9,19 +9,25 @@ import (
 	"github.com/poroping/go-ios-xe-cat4500/models"
 )
 
-func (c *Client) CreateBgpNeighborPrefixList(id string, as int, inout string, newBgpNeighborPrefixList models.BgpNeighborPrefixList) ([]byte, error) {
-	rb, err := json.Marshal(newBgpNeighborPrefixList)
+func (c *Client) CreateBgpNeighborPrefixList(id string, as int, inout string, prefixlist string) error {
+	m := models.BgpNeighborPrefixList{}
+	m.PrefixList.Inout = inout
+	m.PrefixList.PrefixListName = prefixlist
+	rb, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/address-family/no-vrf/ipv4/unicast/neighbor/%s/prefix-list/%s/", c.HostURL, as, id, inout), strings.NewReader(string(rb)))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 201)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
 func (c *Client) ReadBgpNeighborPrefixList(id string, as int, inout string) (*models.BgpNeighborPrefixList, error) {
@@ -44,33 +50,39 @@ func (c *Client) ReadBgpNeighborPrefixList(id string, as int, inout string) (*mo
 	return &res, nil
 }
 
-func (c *Client) UpdateBgpNeighborPrefixList(id string, as int, inout string, updateBgpNeighborPrefixList models.BgpNeighborPrefixList) ([]byte, error) {
-	rb, err := json.Marshal(updateBgpNeighborPrefixList)
+func (c *Client) UpdateBgpNeighborPrefixList(id string, as int, inout string, prefixlist string) error {
+	m := models.BgpNeighborPrefixList{}
+	m.PrefixList.Inout = inout
+	m.PrefixList.PrefixListName = prefixlist
+	rb, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/address-family/no-vrf/ipv4/unicast/neighbor/%s/prefix-list/%s/", c.HostURL, as, id, inout), strings.NewReader(string(rb)))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 204)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
-func (c *Client) DeleteBgpNeighborPrefixList(id string, as int, inout string) ([]byte, error) {
+func (c *Client) DeleteBgpNeighborPrefixList(id string, as int, inout string) error {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/address-family/no-vrf/ipv4/unicast/neighbor/%s/prefix-list/%s/", c.HostURL, as, id, inout), nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 204)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
 func (c *Client) ListBgpNeighborPrefixList(id string, as int) (*models.BgpNeighborPrefixListList, error) {

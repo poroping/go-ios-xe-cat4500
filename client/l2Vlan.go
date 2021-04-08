@@ -9,19 +9,32 @@ import (
 	"github.com/poroping/go-ios-xe-cat4500/models"
 )
 
-func (c *Client) CreateL2Vlan(id int, newL2Vlan models.L2Vlan) ([]byte, error) {
-	rb, err := json.Marshal(newL2Vlan)
+func (c *Client) CreateL2Vlan(id int, name interface{}) error {
+
+	m := models.L2Vlan{VlanList: models.VlanList{
+		ID: id,
+	},
+	}
+
+	if name != nil {
+		m.VlanList.Name = fmt.Sprintf("%v", name)
+	}
+
+	rb, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/restconf/api/running/native/vlan/vlan-list/%d", c.HostURL, id), strings.NewReader(string(rb)))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 201)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
 func (c *Client) ReadL2Vlan(id int) (*models.L2Vlan, error) {
@@ -44,33 +57,41 @@ func (c *Client) ReadL2Vlan(id int) (*models.L2Vlan, error) {
 	return &res, nil
 }
 
-func (c *Client) UpdateL2Vlan(id int, updateL2Vlan models.L2Vlan) ([]byte, error) {
-	rb, err := json.Marshal(updateL2Vlan)
+func (c *Client) UpdateL2Vlan(id int, name string) error {
+	m := models.L2Vlan{VlanList: models.VlanList{
+		Name: name,
+	},
+	}
+
+	rb, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/restconf/api/running/native/vlan/vlan-list/%d", c.HostURL, id), strings.NewReader(string(rb)))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 204)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
-func (c *Client) DeleteL2Vlan(id int) ([]byte, error) {
+func (c *Client) DeleteL2Vlan(id int) error {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/restconf/api/running/native/vlan/vlan-list/%d", c.HostURL, id), nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 204)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
 func (c *Client) ListL2Vlan() (*models.L2VlanList, error) {
