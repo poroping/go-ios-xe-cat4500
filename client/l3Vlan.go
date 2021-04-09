@@ -90,18 +90,18 @@ func (c *Client) UpdateL3Vlan(id int, description interface{}, ip interface{}, m
 	return nil
 }
 
-func (c *Client) DeleteL3Vlan(id int) ([]byte, error) {
+func (c *Client) DeleteL3Vlan(id int) error {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/restconf/api/running/native/interface/Vlan/%d", c.HostURL, id), nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	_, err = c.doRequest(req, 204)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
 
 func (c *Client) ListL3Vlan() (*models.L3VlanList, error) {
