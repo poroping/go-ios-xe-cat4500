@@ -3,24 +3,20 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/poroping/go-ios-xe-cat4500/models"
 )
 
-func (c *Client) CreateBgpNeighbor(asn int, m models.BgpNeighbor) error {
-	id := m.Neighbor.ID
-	uri := GetBgpNeighborURI(asn, id)
+func (c *Client) CreateBgpRouter(m models.BgpRouter) error {
+	id := m.Bgp.ID
+	uri := GetBgpURI(id)
 
-	// disabled cause can't PATCH certain fields "off"
-	// exists, _ := c.ReadBgpNeighbor(asn, m)
+	// exists, _ := c.ReadBgpRouter(m)
 	// if exists != nil {
-	// 	return c.UpdateBgpNeighbor(asn, m)
+	// 	return c.UpdateBgpRouter(m)
 	// }
-
-	// log.Printf("Doesn't exist, will create")
 
 	rb, err := json.Marshal(m)
 	if err != nil {
@@ -30,20 +26,38 @@ func (c *Client) CreateBgpNeighbor(asn int, m models.BgpNeighbor) error {
 	if err != nil {
 		return err
 	}
-	_, err = c.doRequest(req, 0) // set 0 cause PUT create and PUT update are diff 200 codes
+	_, err = c.doRequest(req, 0)
 
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] neighbor created.")
+	// create ipv4 unicast AF
+	// TODO: probs move this to some other func later
+
+	payload := `{
+		"Cisco-IOS-XE-bgp:ipv4": {
+			"af-name": "unicast"
+		}
+	}`
+	uri += "/address-family/no-vrf/ipv4=unicast"
+
+	req, err = http.NewRequest("PUT", fmt.Sprintf("%s/%s", c.HostURL, uri), strings.NewReader(payload))
+	if err != nil {
+		return err
+	}
+	_, err = c.doRequest(req, 0)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func (c *Client) ReadBgpNeighbor(asn int, m models.BgpNeighbor) (*models.BgpNeighbor, error) {
-	id := m.Neighbor.ID
-	uri := GetBgpNeighborURI(asn, id)
+func (c *Client) ReadBgpRouter(m models.BgpRouter) (*models.BgpRouter, error) {
+	id := m.Bgp.ID
+	uri := GetBgpURI(id)
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, uri), nil)
 	if err != nil {
@@ -55,7 +69,7 @@ func (c *Client) ReadBgpNeighbor(asn int, m models.BgpNeighbor) (*models.BgpNeig
 		return nil, err
 	}
 
-	res := models.BgpNeighbor{}
+	res := models.BgpRouter{}
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err
@@ -64,9 +78,9 @@ func (c *Client) ReadBgpNeighbor(asn int, m models.BgpNeighbor) (*models.BgpNeig
 	return &res, nil
 }
 
-func (c *Client) UpdateBgpNeighbor(asn int, m models.BgpNeighbor) error {
-	id := m.Neighbor.ID
-	uri := GetBgpNeighborURI(asn, id)
+func (c *Client) UpdateBgpRouter(m models.BgpRouter) error {
+	id := m.Bgp.ID
+	uri := GetBgpURI(id)
 
 	rb, err := json.Marshal(m)
 	if err != nil {
@@ -85,9 +99,9 @@ func (c *Client) UpdateBgpNeighbor(asn int, m models.BgpNeighbor) error {
 	return nil
 }
 
-func (c *Client) DeleteBgpNeighbor(asn int, m models.BgpNeighbor) error {
-	id := m.Neighbor.ID
-	uri := GetBgpNeighborURI(asn, id)
+func (c *Client) DeleteBgpRouter(m models.BgpRouter) error {
+	id := m.Bgp.ID
+	uri := GetBgpURI(id)
 
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s", c.HostURL, uri), nil)
 	if err != nil {
@@ -102,9 +116,8 @@ func (c *Client) DeleteBgpNeighbor(asn int, m models.BgpNeighbor) error {
 	return nil
 }
 
-/*
-func (c *Client) ListBgpNeighbor() (*models.BgpNeighborList, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/43892/neighbor=", c.HostURL), nil)
+func (c *Client) ListBgpRouter(uri string) (*models.BgpRouterList, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, uri), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +127,7 @@ func (c *Client) ListBgpNeighbor() (*models.BgpNeighborList, error) {
 		return nil, err
 	}
 
-	res := models.BgpNeighborList{}
+	res := models.BgpRouterList{}
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err
@@ -122,4 +135,3 @@ func (c *Client) ListBgpNeighbor() (*models.BgpNeighborList, error) {
 
 	return &res, nil
 }
-*/

@@ -1,3 +1,3 @@
 ## IOSXE Client (Go)
 
-Totally not butchered from [Hashicups](https://github.com/hashicorp-demoapp/product-api-go)
+For Catalyst 4500 platform. Cause blowout on lead times for cat 9k series :(
